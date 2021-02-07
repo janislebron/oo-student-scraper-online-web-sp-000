@@ -37,7 +37,7 @@ class Scraper
       elsif social_media.include?(".com")
         student_details[:blog]= doc.css("div.social-icon-container a")[0]["href"]
       end
-    end 
+    end
 
     student_details[:profile_quote] = doc.css("div.vitals-text-container.profile-quote").text
     student_details[:bio] = doc.css("div.details-container.description-holder p").text
