@@ -22,20 +22,28 @@ class Scraper
   end
 
   def self.scrape_profile_page(profile_url)
-    students_hash = {}
-    html = Nokogiri::HTML(open(profile_url))
-    html.css("div.social-icon-container a").each do |student|
-      # binding.pry
-       url = student.attribute("href")
-       students_hash[:twitter_url] = url if url.include?("twitter")
-       students_hash[:linkedin_url] = url if url.include?("linkedin")
-       students_hash[:github_url] = url if url.include?("github")
-       students_hash[:blog_url] = url if student.css("img").attribute("src").text.include?("rss")
+   student_profile = {}
+   html = open(profile_url)
+   profile = Nokogiri::HTML(html)
+
+   # Social Links
+
+   profile.css("div.main-wrapper.profile .social-icon-container a").each do |social|
+     if social.attribute("href").value.include?("twitter")
+       student_profile[:twitter] = social.attribute("href").value
+     elsif social.attribute("href").value.include?("linkedin")
+       student_profile[:linkedin] = social.attribute("href").value
+     elsif social.attribute("href").value.include?("github")
+       student_profile[:github] = social.attribute("href").value
+     else
+       student_profile[:blog] = social.attribute("href").value
+     end
    end
 
-       students_hash[:profile_quote] = html.css("div.profile-quote").text
-       students_hash[:bio] = html.css("div.bio-content p").text
-   students_hash
-  end
+   student_profile[:profile_quote] = profile.css("div.main-wrapper.profile .vitals-text-container .profile-quote").text
+   student_profile[:bio] = profile.css("div.main-wrapper.profile .description-holder p").text
+
+   student_profile
+ end
 
 end
